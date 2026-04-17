@@ -1,3 +1,3 @@
-This is our final project
+This is our awesome final project
 
 Jake, Declan, and Chevaughn
