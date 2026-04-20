@@ -145,6 +145,8 @@ def strike():
     
     # note the strike
     strikes_left -= 1
+    COUNTDOWN = COUNTDOWN - 15
+
 
 # turns off the bomb
 def turn_off():
