@@ -102,9 +102,11 @@ def genWiresTarget():
     return 5
 # generates the keypad combination from a keyword and rotation key
 def genKeypadTarget():
-    # Create your own logic of making a keypad combination number if needed
-    # TODO
-    return "26863"
+    global keypad_number
+    keypad_number = randint(1,100)
+    if DEBUG:
+        print(f"[DEBUG] Keypad decimal number: {keypad_number}")
+    return bin(keypad_number[2:]
 
 # generate the color of the pushbutton (which determines how to defuse the phase)
 button_color = choice(["R", "G", "B"])
@@ -132,6 +134,7 @@ keypad_target = genKeypadTarget()
 button_target = genButtonTarget()
 
 # set the bomb's LCD bootup text
-boot_text = f"*Add your own text here specific to your bomb*\n"\
+boot_text = (f"*Bomb Systems Initializing...*\n"\
             f"*Serial number: {serial}\n"\
-            
+            f"*KEYPAD ENCRYPTION KEY REQUIRED: {keypad_number}*\n"
+            )
