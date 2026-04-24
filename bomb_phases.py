@@ -237,19 +237,48 @@ class Wires(PhaseThread):
     def __init__(self, component, target, name="Wires"):
         super().__init__(name, component, target)
 
+    #target is a dictionary from bomb_configs.py
+        self._image_path = target["image"]
+        self._sequence = target["sequence"]
+
+#stores the wire pull order the player has done so far
+        self._value = []
+    #remembers previous wire states so we can detect newly pulled wires
+        self._previous_states = []
+    
+
     # runs the thread
     def run(self):
-        # TODO
-        pass
+        self._running = True
+        #assume all wires begin connected
+         #GPIO value True = connected, False = pulled
+        self._previous_states = [pin.value for pin in self._component]
 
+        while (self._running):
+            current_states = [pin.value for pin in self._component]
+
+            for i in range(len(current_states)):
+                #detect when a wire is connected or not
+                if (self._previous_states[i] == True and current_states[i] == False):
+                    wire_number = i + 1
+                    self._value.append(wire_number)
+
+#check if the new wire pull matches the correct sequence so far
+                    if (self._value != self._sequence[0:len(self._value)]):
+                        self._failed = True
+                        self._value = []
+
+#correct full sequence pulled = defused
+                    elif (self._value == self._sequence):
+                        self._defused = True
+            self._previous_states = current_states 
+            sleep(0.1)
     # returns the jumper wires state as a string
     def __str__(self):
         if (self._defused):
             return "DEFUSED"
         else:
-            # TODO
-            pass
-
+            return f"Pulled order: {self._value}"
 # the pushbutton phase
 class Button(PhaseThread):
     def __init__(self, component_state, component_rgb, target, color, timer, name="Button"):
