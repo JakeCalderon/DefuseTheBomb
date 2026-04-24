@@ -21,6 +21,15 @@ if (RPi):
     from digitalio import DigitalInOut, Direction, Pull
     from adafruit_matrixkeypad import Matrix_Keypad
 
+# track progress through toggle phase
+toggle_progress = 0
+
+# 0–3 toggle sequence (NO repeats)
+def genTogglesTarget():
+    seq = [0, 1, 2, 3]
+    shuffle(seq)
+    return seq
+
 #################################
 # setup the electronic components
 #################################
