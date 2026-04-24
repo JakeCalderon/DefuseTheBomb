@@ -24,7 +24,7 @@ if (RPi):
 # track progress through toggle phase
 toggle_progress = 0
 
-# 0–3 toggle sequence (NO repeats)
+# 0–3 toggle sequence 
 def genTogglesTarget():
     seq = [0, 1, 2, 3]
     shuffle(seq)
