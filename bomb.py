@@ -141,11 +141,18 @@ def check_phases():
 
 # handles a strike
 def strike():
-    global strikes_left
-    
-    # note the strike
+    global strikes_left, timer
+
     strikes_left -= 1
-    COUNTDOWN = COUNTDOWN - 15
+
+    # flash timer or force immediate update
+    if timer._value > 15:
+        timer._value -= 15
+    else:
+        timer._value = 0
+
+    # optional debug/feedback
+    print("STRIKE! -15 seconds")
 
 
 # turns off the bomb
