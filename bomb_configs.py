@@ -1,4 +1,4 @@
-#################################
+##################################
 # CSC 102 Defuse the Bomb Project
 # Configuration file
 # Team: Jake C, Declan L, Chevaughn H
