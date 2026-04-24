@@ -341,16 +341,16 @@ class Toggles(PhaseThread):
             # correct toggle expected
             expected = self._target[self._step]
 
-            # if correct switch is ON (pressed/high)
+            # if correct switch is ON 
             if self._value[expected]:
 
-                # wait for confirmation via button press
+                # wait for confirmation by button press
                 sleep(0.2)
 
                 # confirm success for this step
                 self._step += 1
 
-                # update global progress (for Morse clue system)
+                # update global progress 
                 import bomb_configs
                 bomb_configs.toggle_progress = self._step
 
