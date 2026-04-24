@@ -106,9 +106,16 @@ def genTogglesTarget():
     return 20
 
 def genWiresTarget():
-    # Create your own logic of making a target number for wires
-    # TODO
-    return 5
+    wire_puzzles = [
+        {"image": "wire_images/wires_1.png", "sequence": [1, 3, 5]},
+        {"image": "wire_images/wires_2.png", "sequence": [2, 4, 1]},
+        {"image": "wire_images/wires_3.png", "sequence": [5, 2, 3]},
+        {"image": "wire_images/wires_4.png", "sequence": [4, 1, 2]},
+        {"image": "wire_images/wires_5.png": "sequence": [3, 5, 4]},
+    ]
+    
+    return choice(wire_puzzles)
+   
 # generates the keypad combination from a keyword and rotation key
 def genKeypadTarget():
     global keypad_number
