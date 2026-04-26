@@ -14,6 +14,13 @@ from time import sleep
 import os
 import sys
 
+MORSE = {
+    0: ".---",
+    1: "..--",
+    2: "-..-",
+    3: "--.."
+}
+
 #########
 # classes
 #########
@@ -260,33 +267,55 @@ class Button(PhaseThread):
 
     # runs the thread
     def run(self):
-        self._running = True
-        # set the RGB LED color
-        self._rgb[0].value = False if self._color == "R" else True
-        self._rgb[1].value = False if self._color == "G" else True
-        self._rgb[2].value = False if self._color == "B" else True
-        while (self._running):
-            # get the pushbutton's state
-            self._value = self._component.value
-            # it is pressed
-            if (self._value):
-                # note it
-                self._pressed = True
-            # it is released
-            else:
-                # was it previously pressed?
-                if (self._pressed):
-                    # check the release parameters
-                    # for R, nothing else is needed
-                    # for G or B, a specific digit must be in the timer (sec) when released
-                    if (not self._target or self._target in self._timer._sec):
-                        self._defused = True
-                    else:
-                        self._failed = True
-                    # note that the pushbutton was released
-                    self._pressed = False
-            sleep(0.1)
+    self._running = True
 
+    import bomb_configs
+
+    # set LED color
+    self._rgb[0].value = False if self._color == "R" else True
+    self._rgb[1].value = False if self._color == "G" else True
+    self._rgb[2].value = False if self._color == "B" else True
+
+    while (self._running):
+
+        # get current toggle step
+        step = bomb_configs.toggle_progress
+        target_seq = bomb_configs.toggles_target
+
+        # if finished, stop signaling
+        if step >= len(target_seq):
+            self._defused = True
+            break
+
+        current_toggle = target_seq[step]
+
+        # Morse code pattern
+        pattern = MORSE[current_toggle]
+
+        # blink Morse code
+        for symbol in pattern:
+
+            if symbol == ".":
+                # DOT = blue flash
+                self._rgb[0].value = True
+                self._rgb[1].value = True
+                self._rgb[2].value = False
+                sleep(0.3)
+
+            elif symbol == "-":
+                # DASH = red flash
+                self._rgb[0].value = False
+                self._rgb[1].value = True
+                self._rgb[2].value = True
+                sleep(0.6)
+
+            # off between signals
+            self._rgb[0].value = True
+            self._rgb[1].value = True
+            self._rgb[2].value = True
+            sleep(0.2)
+
+        sleep(1)
     # returns the pushbutton's state as a string
     def __str__(self):
         if (self._defused):
@@ -298,16 +327,42 @@ class Button(PhaseThread):
 class Toggles(PhaseThread):
     def __init__(self, component, target, name="Toggles"):
         super().__init__(name, component, target)
+        self._value = [False] * 4   # 4 switches
+        self._step = 0              # progress through sequence
 
-    # runs the thread
     def run(self):
-        # TODO
-        pass
+        self._running = True
 
-    # returns the toggle switches state as a string
+        while self._running:
+
+            # read toggle states
+            self._value = [pin.value for pin in self._component]
+
+            # correct toggle expected
+            expected = self._target[self._step]
+
+            # if correct switch is ON 
+            if self._value[expected]:
+
+                # wait for confirmation by button press
+                sleep(0.2)
+
+                # confirm success for this step
+                self._step += 1
+
+                # update global progress 
+                import bomb_configs
+                bomb_configs.toggle_progress = self._step
+
+                # completed all toggles
+                if self._step >= len(self._target):
+                    self._defused = True
+                    break
+
+            sleep(0.1)
+
     def __str__(self):
-        if (self._defused):
+        if self._defused:
             return "DEFUSED"
-        else:
-            # TODO
-            pass
+        return f"Step {self._step}/4"
+            
