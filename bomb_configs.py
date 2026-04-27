@@ -24,11 +24,6 @@ if (RPi):
 # track progress through toggle phase
 toggle_progress = 0
 
-# 0–3 toggle sequence 
-def genTogglesTarget():
-    seq = [0, 1, 2, 3]
-    shuffle(seq)
-    return seq
     
 #################################
 # setup the electronic components
@@ -100,10 +95,11 @@ def genSerial():
     # TODO
     return "B026DES"
 
+# 0–3 toggle sequence 
 def genTogglesTarget():
-    # Create your own logic of making a target number for toggles
-    # TODO
-    return 20
+    seq = [0, 1, 2, 3]
+    shuffle(seq)
+    return seq
 
 def genWiresTarget():
     wire_puzzles = [
@@ -129,7 +125,7 @@ def genKeypadTarget():
 button_color = choice(["R", "G", "B"])
 
 def genButtonTarget():
-    # TODO
+    #TODO
     global button_color
     # Create your own logic of making a Button target
     # appropriately set the target (R is None)
