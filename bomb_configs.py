@@ -122,7 +122,7 @@ def genKeypadTarget():
     keypad_number = randint(1,100)
     if DEBUG:
         print(f"[DEBUG] Keypad decimal number: {keypad_number}")
-    return bin(keypad_number[2:]
+    return bin(keypad_number)[2:]
 
 
 # generate the color of the pushbutton (which determines how to defuse the phase)
