@@ -296,7 +296,7 @@ class Button(PhaseThread):
 
     # runs the thread
     def run(self):
-    self._running = True
+        self._running = True
 
     import bomb_configs
 
