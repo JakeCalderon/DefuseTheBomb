@@ -283,74 +283,77 @@ class Wires(PhaseThread):
 class Button(PhaseThread):
     def __init__(self, component_state, component_rgb, target, color, timer, name="Button"):
         super().__init__(name, component_state, target)
-        # the default value is False/Released
         self._value = False
-        # has the pushbutton been pressed?
         self._pressed = False
-        # we need the pushbutton's RGB pins to set its color
         self._rgb = component_rgb
-        # the pushbutton's randomly selected LED color
         self._color = color
-        # we need to know about the timer (7-segment display) to be able to determine correct pushbutton releases in some cases
         self._timer = timer
 
-    # runs the thread
     def run(self):
+        import bomb_configs
         self._running = True
 
-    import bomb_configs
+        # Set LED color at start
+        self._rgb[0].value = False if self._color == "R" else True
+        self._rgb[1].value = False if self._color == "G" else True
+        self._rgb[2].value = False if self._color == "B" else True
 
-    # set LED color
-    self._rgb[0].value = False if self._color == "R" else True
-    self._rgb[1].value = False if self._color == "G" else True
-    self._rgb[2].value = False if self._color == "B" else True
+        while self._running:
 
-    while (self._running):
+            # Read button state
+            self._value = self._component.value
 
-        # get current toggle step
-        step = bomb_configs.toggle_progress
-        target_seq = bomb_configs.toggles_target
+            # Detect press → release
+            if self._value:
+                self._pressed = True
+            else:
+                if self._pressed:
+                    # Button released → confirm toggle step
+                    bomb_configs.toggle_progress += 1
+                    self._pressed = False
 
-        # if finished, stop signaling
-        if step >= len(target_seq):
-            self._defused = True
-            break
+            # Morse code signaling for current toggle
+            step = bomb_configs.toggle_progress
+            target_seq = bomb_configs.toggles_target
 
-        current_toggle = target_seq[step]
+            # Finished all toggles
+            if step >= len(target_seq):
+                self._defused = True
+                break
 
-        # Morse code pattern
-        pattern = MORSE[current_toggle]
+            current_toggle = target_seq[step]
+            pattern = MORSE[current_toggle]
 
-        # blink Morse code
-        for symbol in pattern:
+            # Blink Morse code
+            for symbol in pattern:
 
-            if symbol == ".":
-                # DOT = blue flash
+                if symbol == ".":
+                    # DOT = blue flash
+                    self._rgb[0].value = True
+                    self._rgb[1].value = True
+                    self._rgb[2].value = False
+                    sleep(0.3)
+
+                elif symbol == "-":
+                    # DASH = red flash
+                    self._rgb[0].value = False
+                    self._rgb[1].value = True
+                    self._rgb[2].value = True
+                    sleep(0.6)
+
+                # Off between signals
                 self._rgb[0].value = True
                 self._rgb[1].value = True
-                self._rgb[2].value = False
-                sleep(0.3)
-
-            elif symbol == "-":
-                # DASH = red flash
-                self._rgb[0].value = False
-                self._rgb[1].value = True
                 self._rgb[2].value = True
-                sleep(0.6)
+                sleep(0.2)
 
-            # off between signals
-            self._rgb[0].value = True
-            self._rgb[1].value = True
-            self._rgb[2].value = True
-            sleep(0.2)
+            sleep(1)
 
-        sleep(1)
-    # returns the pushbutton's state as a string
     def __str__(self):
-        if (self._defused):
+        if self._defused:
             return "DEFUSED"
-        else:
-            return str("Pressed" if self._value else "Released")
+        return "Pressed" if self._value else "Released"
+
 
 # the toggle switches phase
 class Toggles(PhaseThread):
