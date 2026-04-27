@@ -111,7 +111,7 @@ def genWiresTarget():
         {"image": "wire_images/wires_2.png", "sequence": [2, 4, 1]},
         {"image": "wire_images/wires_3.png", "sequence": [5, 2, 3]},
         {"image": "wire_images/wires_4.png", "sequence": [4, 1, 2]},
-        {"image": "wire_images/wires_5.png": "sequence": [3, 5, 4]},
+        {"image": "wire_images/wires_5.png", "sequence": [3, 5, 4]},
     ]
     
     return choice(wire_puzzles)
