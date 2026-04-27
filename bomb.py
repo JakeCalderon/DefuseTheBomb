@@ -1,7 +1,7 @@
 ################################# GGG
 # CSC 102 Defuse the Bomb Project
 # Main program
-# Team: 
+# Team: Chevaughn H, Declan L, Jake C
 #################################
 
 # import the configs
