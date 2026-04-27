@@ -6,7 +6,7 @@
 
 # constants
 DEBUG = False        # debug mode?
-RPi = False           # is this running on the RPi?
+RPi = True           # is this running on the RPi?
 SHOW_BUTTONS = False # show the Pause and Quit buttons on the main LCD GUI?
 COUNTDOWN = 300      # the initial bomb countdown value (seconds)
 NUM_STRIKES = 4      # the total strikes allowed before the bomb "explodes"
@@ -21,6 +21,10 @@ if (RPi):
     from digitalio import DigitalInOut, Direction, Pull
     from adafruit_matrixkeypad import Matrix_Keypad
 
+# track progress through toggle phase
+toggle_progress = 0
+
+    
 #################################
 # setup the electronic components
 #################################
@@ -91,26 +95,37 @@ def genSerial():
     # TODO
     return "B026DES"
 
+# 0–3 toggle sequence 
 def genTogglesTarget():
-    # Create your own logic of making a target number for toggles
-    # TODO
-    return 20
+    seq = [0, 1, 2, 3]
+    shuffle(seq)
+    return seq
 
 def genWiresTarget():
-    # Create your own logic of making a target number for wires
-    # TODO
-    return 5
+    wire_puzzles = [
+        {"image": "wire_images/wires_1.png", "sequence": [1, 3, 5]},
+        {"image": "wire_images/wires_2.png", "sequence": [2, 4, 1]},
+        {"image": "wire_images/wires_3.png", "sequence": [5, 2, 3]},
+        {"image": "wire_images/wires_4.png", "sequence": [4, 1, 2]},
+        {"image": "wire_images/wires_5.png", "sequence": [3, 5, 4]},
+    ]
+    
+    return choice(wire_puzzles)
+   
 # generates the keypad combination from a keyword and rotation key
 def genKeypadTarget():
-    # Create your own logic of making a keypad combination number if needed
-    # TODO
-    return "26863"
+    global keypad_number
+    keypad_number = randint(1,100)
+    if DEBUG:
+        print(f"[DEBUG] Keypad decimal number: {keypad_number}")
+    return bin(keypad_number)[2:]
+
 
 # generate the color of the pushbutton (which determines how to defuse the phase)
 button_color = choice(["R", "G", "B"])
 
 def genButtonTarget():
-    # TODO
+    #TODO
     global button_color
     # Create your own logic of making a Button target
     # appropriately set the target (R is None)
@@ -132,6 +147,8 @@ keypad_target = genKeypadTarget()
 button_target = genButtonTarget()
 
 # set the bomb's LCD bootup text
-boot_text = f"*Add your own text here specific to your bomb*\n"\
+boot_text = (f"*Bomb Systems Initializing...*\n"\
             f"*Serial number: {serial}\n"\
+            f"*KEYPAD ENCRYPTION KEY REQUIRED: {keypad_number}*\n"
+            )
             
