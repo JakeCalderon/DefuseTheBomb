@@ -15,8 +15,6 @@ def bootup(n=0):
     gui._lscroll["text"] = boot_text.replace("\x00", "")
     gui.setup()
 
-    # On Pi: use real hardware. If you ever want to simulate on a laptop,
-    # you can remove the RPi check and always call these.
     if RPi:
         setup_phases()
         check_phases()
@@ -156,7 +154,7 @@ gui = Lcd(window)
 
 # must match the number of phases you decrement in check_phases (4 here)
 strikes_left = NUM_STRIKES
-active_phases = NUM_PHASES   # set NUM_PHASES = 4 in bomb_configs.py
+active_phases = NUM_PHASES  
 
 gui.after(100, bootup)
 window.mainloop()
