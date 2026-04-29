@@ -7,7 +7,6 @@
 from bomb_configs import *
 from tkinter import *
 import tkinter
-from PIL import Image, ImageTk
 from threading import Thread
 from time import sleep
 import os
@@ -72,17 +71,7 @@ class Lcd(Frame):
                                font=("Courier New", 18),
                                text="Strikes left: ")
         self._lstrikes.grid(row=5, column=2, sticky=W)
-                # DECLAN WIRES GUI IMAGE
-    try:
-        selected_wire_image = wires_target["image"]
-
-        wire_image = Image.open(selected_wire_image)
-        wire_image = wire_image.resize((650, 450))
-
-        self._wire_photo = ImageTk.PhotoImage(wire_image)
-
-        self._lwireimage = Label(self, image=self._wire_photo, bg="black")
-        self._lwireimage.grid(row=6, column=0, columnspan=3, pady=20)
+                
 
     except Exception as e:
         self._lwireimage = Label(
