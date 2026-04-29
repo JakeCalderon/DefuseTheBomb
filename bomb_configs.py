@@ -149,6 +149,6 @@ button_target = genButtonTarget()
 # set the bomb's LCD bootup text
 boot_text = (f"*Bomb Systems Initializing...*\n"\
             f"*Serial number: {serial}\n"\
-            f"*KEYPAD ENCRYPTION KEY REQUIRED: {keypad_number}*\n"
+            f"*KEYPAD ENCRYPTION KEY REQUIRED: {keypad_number}\n"
             )
             
