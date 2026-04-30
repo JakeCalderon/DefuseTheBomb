@@ -52,9 +52,13 @@ class Lcd(Frame):
                               text="Keypad phase: ")
         self._lkeypad.grid(row=2, column=0, columnspan=3, sticky=W)
 
-        self._lwires = Label(self, bg="black", fg="#00ff00",
-                             font=("Courier New", 18),
-                             text="Wires phase: ")
+        self._lwires = Label(
+            self,
+            bg="black",
+            fg=wires_target["fg"],
+            font=("Courier New", 24, "bold"),
+            text="WIRES"
+        )
         self._lwires.grid(row=3, column=0, columnspan=3, sticky=W)
 
         self._lbutton = Label(self, bg="black", fg="#00ff00",
@@ -72,16 +76,6 @@ class Lcd(Frame):
                                text="Strikes left: ")
         self._lstrikes.grid(row=5, column=2, sticky=W)
                 
-
-    except Exception as e:
-        self._lwireimage = Label(
-            self,
-            bg="black",
-            fg="red",
-            font=("Courier New", 14),
-            text=f"Wire image failed to load: {e}"
-        )
-        self._lwireimage.grid(row=6, column=0, columnspan=3, pady=20)
             
         if (SHOW_BUTTONS):
             self._bpause = tkinter.Button(self, bg="red", fg="white",
@@ -221,30 +215,30 @@ class Keypad(PhaseThread):
 class Wires(PhaseThread):
     def __init__(self, component, target, name="Wires"):
         super().__init__(name, component, target)
-        # target is a dict from bomb_configs: {"image": ..., "sequence": [...]}
-        self._image_path = target["image"]
+
+        self._color_name = target["color_name"]
         self._sequence = target["sequence"]
-        self._value = []              # pulled order
-        self._previous_states = []    # last GPIO states
+
+        self._value = []
+        self._previous_states = []
 
     def run(self):
         self._running = True
-        # assume all wires begin connected (True)
+
         self._previous_states = [pin.value for pin in self._component]
 
         while (self._running):
             current_states = [pin.value for pin in self._component]
 
             for i in range(len(current_states)):
-                # detect newly pulled wire: True -> False
                 if (self._previous_states[i] and not current_states[i]):
                     wire_number = i + 1
                     self._value.append(wire_number)
 
-                    # check prefix of sequence
                     if (self._value != self._sequence[0:len(self._value)]):
                         self._failed = True
                         self._value = []
+
                     elif (self._value == self._sequence):
                         self._defused = True
 
@@ -255,7 +249,7 @@ class Wires(PhaseThread):
         if (self._defused):
             return "DEFUSED"
         else:
-            return f"Pulled order: {self._value}"
+            return f"{self._color_name.upper()} wires: {self._value}"
 
 
 class Button(PhaseThread):
