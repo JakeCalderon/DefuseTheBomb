@@ -102,15 +102,19 @@ def genTogglesTarget():
     return seq
 
 def genWiresTarget():
-    wire_puzzles = [
-        {"image": "wire_images/wires_1.png", "sequence": [1, 3, 5]},
-        {"image": "wire_images/wires_2.png", "sequence": [2, 4, 1]},
-        {"image": "wire_images/wires_3.png", "sequence": [5, 2, 3]},
-        {"image": "wire_images/wires_4.png", "sequence": [4, 1, 2]},
-        {"image": "wire_images/wires_5.png", "sequence": [3, 5, 4]},
-    ]
-    
-    return choice(wire_puzzles)
+    wire_puzzles = {
+        "red":    {"fg": "red",     "sequence": [5, 2, 3]},
+        "blue":   {"fg": "blue",    "sequence": [3, 5, 4]},
+        "green":  {"fg": "#00ff00", "sequence": [2, 4, 1]},
+        "orange": {"fg": "orange",  "sequence": [1, 3, 5]},
+        "purple": {"fg": "purple",  "sequence": [4, 1, 2]},
+    }
+
+    color_name = choice(list(wire_puzzles.keys()))
+    puzzle = wire_puzzles[color_name]
+    puzzle["color_name"] = color_name
+
+    return puzzle
    
 # generates the keypad combination from a keyword and rotation key
 def genKeypadTarget():
