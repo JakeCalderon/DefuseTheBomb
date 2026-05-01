@@ -328,33 +328,11 @@ class Toggles(PhaseThread):
         super().__init__(name, component, target)
         self._value = [False] * 4
         self._step = 0
-'''
-    def run(self):
-        import bomb_configs
-        self._running = True
-
-        while (self._running):
-            self._value = [pin.value for pin in self._component]
-
-            expected = self._target[self._step]
-
-            # if correct switch is ON
-            if self._value[expected]:
-                sleep(0.2)
-                self._step += 1
-                bomb_configs.toggle_progress = self._step
-
-                if self._step >= len(self._target):
-                    self._defused = True
-            else: 
-                strike()
-                break
-'''
     def run(self):
         import bomb_configs
         self._running = True
     
-        prev_state = [False] * 4  # track previous toggle states
+        prev_state = [False] * 4
     
         while (self._running):
             self._value = [pin.value for pin in self._component]
@@ -362,7 +340,7 @@ class Toggles(PhaseThread):
             expected = self._target[self._step]
     
             for i in range(4):
-                # detect toggle being flipped ON 
+                # detect toggle flipped ON
                 if (not prev_state[i] and self._value[i]):
     
                     if i == expected:
@@ -372,12 +350,17 @@ class Toggles(PhaseThread):
     
                         if self._step >= len(self._target):
                             self._defused = True
-                            return  # exit thread 
+                            return
     
                     else:
-                        # WRONG toggle results in strike
+                        # WRONG toggle, strike but keep going
                         self._failed = True
-                        return  # exit thread 
+    
+                        # reset sequence
+                        self._step = 0
+                        bomb_configs.toggle_progress = 0
+    
+                        sleep(0.5)
     
             prev_state = self._value
             sleep(0.1)
