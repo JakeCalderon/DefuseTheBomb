@@ -342,32 +342,34 @@ class Toggles(PhaseThread):
             for i in range(4):
                 # detect toggle flipped ON
                 if (not prev_state[i] and self._value[i]):
-    
+            
                     if i == expected:
                         # correct toggle
                         self._step += 1
                         bomb_configs.toggle_progress = self._step
-    
+            
                         if self._step >= len(self._target):
                             self._defused = True
                             return
-    
-                else:
-                    # WRONG toggle → strike
-                    self._failed = True
-                
-                    # reset sequence
-                    self._step = 0
-                    bomb_configs.toggle_progress = 0
-                
-                    # WAIT until THAT toggle is turned OFF
-                    while self._component[i].value:
-                        sleep(0.1)
-                
-                    # reset previous state so it can be triggered again
-                    prev_state = [False] * 4
-                
-                    sleep(0.2)
+            
+                    else:
+                        # WRONG toggle
+                        self._failed = True
+            
+                        # reset sequence
+                        self._step = 0
+                        bomb_configs.toggle_progress = 0
+            
+                        # wait until THAT toggle is turned OFF
+                        while self._component[i].value:
+                            sleep(0.1)
+            
+                        # reset state
+                        prev_state = [False] * 4
+            
+                        sleep(0.2)
+
+        break
 
     def __str__(self):
         if (self._defused):
