@@ -344,12 +344,28 @@ class Toggles(PhaseThread):
                 if (not self._previous_states[i] and current_states[i]):
                     self._value.append(i)
 
-                    # check if sequence is still correct
                     if (self._value != self._target[0:len(self._value)]):
                         self._failed = True
-
-                        # RESET 
+                    
+                        # generate NEW Morse sequence
+                        new_target = bomb_configs.genTogglesTarget()
+                        self._target = new_target
+                        bomb_configs.toggles_target = new_target
+                    
+                        # reset progress
                         self._value = []
+                        bomb_configs.toggle_progress = 0
+                    
+                        # REQUIRE all toggles OFF before continuing
+                        while any(pin.value for pin in self._component):
+                            sleep(0.1)
+                    
+                        # reset state tracking
+                        self._previous_states = [False] * len(self._component)
+                        
+                        sleep(0.3)
+                        self._value = []
+                        break                        
 
                     elif (self._value == self._target):
                         self._defused = True
