@@ -352,18 +352,22 @@ class Toggles(PhaseThread):
                             self._defused = True
                             return
     
-                    else:
-                        # WRONG toggle, strike but keep going
-                        self._failed = True
-    
-                        # reset sequence
-                        self._step = 0
-                        bomb_configs.toggle_progress = 0
-    
-                        sleep(0.5)
-    
-            prev_state = self._value
-            sleep(0.1)
+                else:
+                    # WRONG toggle → strike
+                    self._failed = True
+                
+                    # reset sequence
+                    self._step = 0
+                    bomb_configs.toggle_progress = 0
+                
+                    # WAIT until THAT toggle is turned OFF
+                    while self._component[i].value:
+                        sleep(0.1)
+                
+                    # reset previous state so it can be triggered again
+                    prev_state = [False] * 4
+                
+                    sleep(0.2)
 
     def __str__(self):
         if (self._defused):
