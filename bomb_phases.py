@@ -350,22 +350,27 @@ class Toggles(PhaseThread):
                         # reset local state
                         self._value = []
                         
-                        # generate NEW sequence
+                        import bomb_configs
+                        
+                        # generate ONE new consistent target
                         new_target = bomb_configs.genTogglesTarget()
+                        
+                        # apply it everywhere ONCE
                         self._target = new_target
                         bomb_configs.toggles_target = new_target
                         
-                        # reset progress tracker
+                        # reset shared progress
                         bomb_configs.toggle_progress = 0
                         
-                        # WAIT until ALL switches are OFF (like Wires behavior)
+                        # wait for clean hardware state
                         while any(pin.value for pin in self._component):
                             sleep(0.1)
                         
-                        # IMPORTANT: re-sync previous states AFTER reset
+                        # resync edge detection
                         self._previous_states = [pin.value for pin in self._component]
                         
-                        break                
+                        sleep(0.2)
+                        break
 
                     elif (self._value == self._target):
                         self._defused = True
