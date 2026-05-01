@@ -346,26 +346,26 @@ class Toggles(PhaseThread):
 
                     if (self._value != self._target[0:len(self._value)]):
                         self._failed = True
-                    
-                        # generate NEW Morse sequence
+
+                        # reset local state
+                        self._value = []
+                        
+                        # generate NEW sequence
                         new_target = bomb_configs.genTogglesTarget()
                         self._target = new_target
                         bomb_configs.toggles_target = new_target
-                    
-                        # reset progress
-                        self._value = []
+                        
+                        # reset progress tracker
                         bomb_configs.toggle_progress = 0
-                    
-                        # REQUIRE all toggles OFF before continuing
+                        
+                        # WAIT until ALL switches are OFF (like Wires behavior)
                         while any(pin.value for pin in self._component):
                             sleep(0.1)
-                    
-                        # reset state tracking
-                        self._previous_states = [False] * len(self._component)
                         
-                        sleep(0.3)
-                        self._value = []
-                        break                        
+                        # IMPORTANT: re-sync previous states AFTER reset
+                        self._previous_states = [pin.value for pin in self._component]
+                        
+                        break                
 
                     elif (self._value == self._target):
                         self._defused = True
@@ -374,13 +374,6 @@ class Toggles(PhaseThread):
             sleep(0.1)
 
     def __str__(self):
-        if (self._defused):
+        if self._defused:
             return "DEFUSED"
-        else:
-            return f"Toggles: {self._value}"
-            
-    def __str__(self):
-        if (self._defused):
-            return "DEFUSED"
-        else:
-            return f"Step {self._step}/4"
+        return f"Toggles: {self._value}"
