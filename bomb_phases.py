@@ -375,7 +375,7 @@ class Toggles(PhaseThread):
                             return  # exit thread 
     
                     else:
-                        # WRONG toggle → strike
+                        # WRONG toggle results in strike
                         self._failed = True
                         return  # exit thread 
     
