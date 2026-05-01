@@ -346,6 +346,8 @@ class Toggles(PhaseThread):
 
                 if self._step >= len(self._target):
                     self._defused = True
+            else: 
+                strikes_left -=1
                     break
 
             sleep(0.1)
