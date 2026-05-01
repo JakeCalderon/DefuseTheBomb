@@ -326,51 +326,43 @@ class Button(PhaseThread):
 class Toggles(PhaseThread):
     def __init__(self, component, target, name="Toggles"):
         super().__init__(name, component, target)
-        self._value = [False] * 4
-        self._step = 0
+
+        self._value = []               # stores toggle order
+        self._previous_states = []     # track last state
+
     def run(self):
-        import bomb_configs
         self._running = True
-    
-        prev_state = [False] * 4
-    
+
+        # initial state
+        self._previous_states = [pin.value for pin in self._component]
+
         while (self._running):
-            self._value = [pin.value for pin in self._component]
-    
-            expected = self._target[self._step]
-    
-            for i in range(4):
-                # detect toggle flipped ON
-                if (not prev_state[i] and self._value[i]):
-            
-                    if i == expected:
-                        # correct toggle
-                        self._step += 1
-                        bomb_configs.toggle_progress = self._step
-            
-                        if self._step >= len(self._target):
-                            self._defused = True
-                            return
-            
-                    else:
-                        # WRONG toggle
+            current_states = [pin.value for pin in self._component]
+
+            for i in range(len(current_states)):
+                # detect toggle flipped ON 
+                if (not self._previous_states[i] and current_states[i]):
+                    self._value.append(i)
+
+                    # check if sequence is still correct
+                    if (self._value != self._target[0:len(self._value)]):
                         self._failed = True
-            
-                        # reset sequence
-                        self._step = 0
-                        bomb_configs.toggle_progress = 0
-            
-                        # wait until THAT toggle is turned OFF
-                        while self._component[i].value:
-                            sleep(0.1)
-            
-                        # reset state
-                        prev_state = [False] * 4
-            
-                        sleep(0.2)
 
-        break
+                        # RESET 
+                        self._value = []
 
+                    elif (self._value == self._target):
+                        self._defused = True
+
+            self._previous_states = current_states
+            sleep(0.1)
+
+    def __str__(self):
+        if (self._defused):
+            return "DEFUSED"
+        else:
+            return f"Toggles: {self._value}"
+            
     def __str__(self):
         if (self._defused):
             return "DEFUSED"
