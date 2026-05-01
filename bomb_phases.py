@@ -56,7 +56,7 @@ class Lcd(Frame):
             self,
             bg="black",
             fg=wires_target["fg"],
-            font=("Courier New", 24, "bold"),
+            font=("Courier New", 18, "bold"),
             text="WIRES"
         )
         self._lwires.grid(row=3, column=0, columnspan=3, sticky=W)
