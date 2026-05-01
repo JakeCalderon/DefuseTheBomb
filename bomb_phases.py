@@ -328,7 +328,7 @@ class Toggles(PhaseThread):
         super().__init__(name, component, target)
         self._value = [False] * 4
         self._step = 0
-
+'''
     def run(self):
         import bomb_configs
         self._running = True
@@ -349,7 +349,37 @@ class Toggles(PhaseThread):
             else: 
                 strike()
                 break
-
+'''
+    def run(self):
+        import bomb_configs
+        self._running = True
+    
+        prev_state = [False] * 4  # track previous toggle states
+    
+        while (self._running):
+            self._value = [pin.value for pin in self._component]
+    
+            expected = self._target[self._step]
+    
+            for i in range(4):
+                # detect toggle being flipped ON 
+                if (not prev_state[i] and self._value[i]):
+    
+                    if i == expected:
+                        # correct toggle
+                        self._step += 1
+                        bomb_configs.toggle_progress = self._step
+    
+                        if self._step >= len(self._target):
+                            self._defused = True
+                            return  # exit thread 
+    
+                    else:
+                        # WRONG toggle → strike
+                        self._failed = True
+                        return  # exit thread 
+    
+            prev_state = self._value
             sleep(0.1)
 
     def __str__(self):
