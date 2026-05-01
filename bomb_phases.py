@@ -75,8 +75,8 @@ class Lcd(Frame):
                                font=("Courier New", 18),
                                text="Strikes left: ")
         self._lstrikes.grid(row=5, column=2, sticky=W)
-                
-            
+
+
         if (SHOW_BUTTONS):
             self._bpause = tkinter.Button(self, bg="red", fg="white",
                                           font=("Courier New", 18),
@@ -326,7 +326,6 @@ class Button(PhaseThread):
 class Toggles(PhaseThread):
     def __init__(self, component, target, name="Toggles"):
         super().__init__(name, component, target)
-
         self._value = [False] * 4
         self._step = 0
 
@@ -334,8 +333,9 @@ class Toggles(PhaseThread):
         import bomb_configs
         self._running = True
 
-        while self._running:
+        while (self._running):
             self._value = [pin.value for pin in self._component]
+
             expected = self._target[self._step]
 
             # if correct switch is ON
@@ -351,7 +351,7 @@ class Toggles(PhaseThread):
             sleep(0.1)
 
     def __str__(self):
-        if self._defused:
+        if (self._defused):
             return "DEFUSED"
         else:
             return f"Step {self._step}/4"
