@@ -327,58 +327,31 @@ class Toggles(PhaseThread):
     def __init__(self, component, target, name="Toggles"):
         super().__init__(name, component, target)
 
-        self._value = []               # stores toggle order
-        self._previous_states = []     # track last state
+        self._value = [False] * 4
+        self._step = 0
 
     def run(self):
+        import bomb_configs
         self._running = True
 
-        # initial state
-        self._previous_states = [pin.value for pin in self._component]
+        while self._running:
+            self._value = [pin.value for pin in self._component]
+            expected = self._target[self._step]
 
-        while (self._running):
-            current_states = [pin.value for pin in self._component]
+            # if correct switch is ON
+            if self._value[expected]:
+                sleep(0.2)
+                self._step += 1
+                bomb_configs.toggle_progress = self._step
 
-            for i in range(len(current_states)):
-                # detect toggle flipped ON 
-                if (not self._previous_states[i] and current_states[i]):
-                    self._value.append(i)
+                if self._step >= len(self._target):
+                    self._defused = True
+                    break
 
-                    if (self._value != self._target[0:len(self._value)]):
-                        self._failed = True
-
-                        # reset local state
-                        self._value = []
-                        
-                        import bomb_configs
-                        
-                        # generate ONE new consistent target
-                        new_target = bomb_configs.genTogglesTarget()
-                        
-                        # apply it everywhere ONCE
-                        self._target = new_target
-                        bomb_configs.toggles_target = new_target
-                        
-                        # reset shared progress
-                        bomb_configs.toggle_progress = 0
-                        
-                        # wait for clean hardware state
-                        while any(pin.value for pin in self._component):
-                            sleep(0.1)
-                        
-                        # resync edge detection
-                        self._previous_states = [pin.value for pin in self._component]
-                        
-                        sleep(0.2)
-                        break
-
-                    elif (self._value == self._target):
-                        self._defused = True
-
-            self._previous_states = current_states
             sleep(0.1)
 
     def __str__(self):
         if self._defused:
             return "DEFUSED"
-        return f"Toggles: {self._value}"
+        else:
+            return f"Step {self._step}/4"
