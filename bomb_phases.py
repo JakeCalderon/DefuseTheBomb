@@ -336,17 +336,42 @@ class Toggles(PhaseThread):
         while (self._running):
             self._value = [pin.value for pin in self._component]
 
-            expected = self._target[self._step]
+            # Check if ANY switch that should NOT be on is currently ON
+            wrong_switch_on = False
+            for i, val in enumerate(self._value):
+                if val and i != self._target[self._step]:
+                    wrong_switch_on = True
+                    break
 
-            # if correct switch is ON
-            if self._value[expected]:
-                sleep(0.2)
+            if wrong_switch_on:
+                # Signal a strike and reset progress
+                self._failed = True
+                self._step = 0
+                bomb_configs.toggle_progress = 0
+
+                # Wait until ALL switches are back OFF before continuing
+                while self._running:
+                    self._value = [pin.value for pin in self._component]
+                    if not any(self._value):
+                        break
+                    sleep(0.1)
+
+            # Check if the correct switch for this step is ON
+            elif self._value[self._target[self._step]]:
+                sleep(0.2) 
                 self._step += 1
                 bomb_configs.toggle_progress = self._step
 
                 if self._step >= len(self._target):
                     self._defused = True
                     break
+
+                # Wait for that correct switch to be released before next step
+                while self._running:
+                    self._value = [pin.value for pin in self._component]
+                    if not any(self._value):
+                        break
+                    sleep(0.1)
 
             sleep(0.1)
 
