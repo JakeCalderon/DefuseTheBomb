@@ -332,23 +332,34 @@ class Toggles(PhaseThread):
     def run(self):
         import bomb_configs
         self._running = True
-
+        previous_value = [False] * 4  # track previous state
+    
         while (self._running):
             self._value = [pin.value for pin in self._component]
-
-            expected = self._target[self._step]
-
-            # if correct switch is ON
-            if self._value[expected]:
-                sleep(0.2)
-                self._step += 1
-                bomb_configs.toggle_progress = self._step
-
-                if self._step >= len(self._target):
-                    self._defused = True
-                    break
-
-            sleep(0.1)
+    
+            # Check for any newly-flipped ON switch (OFF -> ON transition)
+            for i in range(4):
+                if self._value[i] and not previous_value[i]:
+                    # a switch was just flipped ON
+                    if i == self._target[self._step]:
+                        # correct switch
+                        self._step += 1
+                        bomb_configs.toggle_progress = self._step
+                        if self._step >= len(self._target):
+                            self._defused = True
+                            break
+                    else:
+                        # wrong switch
+                        self._failed = True
+                        self._step = 0
+                        bomb_configs.toggle_progress = 0
+    
+                        # wait until ALL switches are back OFF
+                        while self._running:
+                            self._value = [pin.value for pin in self._component]
+                            if not any(self._value):
+                                break
+                            sleep(0.1)
 
     def __str__(self):
         if (self._defused):
