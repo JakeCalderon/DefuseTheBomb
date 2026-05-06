@@ -100,7 +100,9 @@ def genTogglesTarget():
     seq = [0, 1, 2, 3]
     shuffle(seq)
     return seq
-
+    
+#Declan Wires Section
+#Sets random capability for wire color and adheres it to the correct sequence
 def genWiresTarget():
     wire_puzzles = {
         "red":    {"fg": "red",     "sequence": [5, 2, 3]},
