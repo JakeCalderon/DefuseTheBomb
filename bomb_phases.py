@@ -51,7 +51,7 @@ class Lcd(Frame):
                               font=("Courier New", 18),
                               text="Keypad phase: ")
         self._lkeypad.grid(row=2, column=0, columnspan=3, sticky=W)
-
+# Displays Wires on GUI in Color Font (Declan) 
         self._lwires = Label(
             self,
             bg="black",
@@ -211,14 +211,14 @@ class Keypad(PhaseThread):
         else:
             return self._value
 
-
+#Declan Wires Section
 class Wires(PhaseThread):
     def __init__(self, component, target, name="Wires"):
         super().__init__(name, component, target)
 
         self._color_name = target["color_name"]
         self._sequence = target["sequence"]
-
+#Holds value of wires pulled so far
         self._value = []
         self._previous_states = []
 
@@ -241,7 +241,7 @@ class Wires(PhaseThread):
 
                     elif (self._value == self._sequence):
                         self._defused = True
-
+#Compares States
             self._previous_states = current_states
             sleep(0.1)
 
