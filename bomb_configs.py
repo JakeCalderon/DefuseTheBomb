@@ -116,7 +116,7 @@ def genWiresTarget():
 
     return puzzle
    
-# generates the keypad combination from a keyword and rotation key
+# generates the keypad encryption number and assigns its binary equivalent as the answer
 def genKeypadTarget():
     global keypad_number
     keypad_number = randint(1,100)
