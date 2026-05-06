@@ -11,7 +11,7 @@ from threading import Thread
 from time import sleep
 import os
 import sys
-
+#defines morris code values
 MORSE = {
     0: ".---",
     1: "..--",
@@ -290,10 +290,10 @@ class Button(PhaseThread):
             if step >= len(target_seq):
                 self._defused = True
                 break
-
+#sets the current toggle to the step in the random sequence and associates that pattern to the moris code
             current_toggle = target_seq[step]
             pattern = MORSE[current_toggle]
-
+#sets dots and lines to blue and red respectivly
             for symbol in pattern:
                 if symbol == ".":
                     # DOT = blue flash
@@ -336,7 +336,7 @@ class Toggles(PhaseThread):
     
         while (self._running):
             self._value = [pin.value for pin in self._component]
-    
+    #adds a step after a moris code is solved accuratly
             for i in range(4):
                 if self._value[i] and not previous_value[i]:
                     if i == self._target[self._step]:
@@ -345,6 +345,7 @@ class Toggles(PhaseThread):
                         if self._step >= len(self._target):
                             self._defused = True
                             break
+                            #if wrong switch is pulled, resets steps to 0 and must unflick all switches and start over
                     else:
                         self._failed = True
                         self._step = 0
@@ -355,7 +356,7 @@ class Toggles(PhaseThread):
                             if not any(self._value):
                                 break
                             sleep(0.1)
-    
+    #checks if the previous value of toggles is updated
             previous_value = self._value[:]  
             sleep(0.1)
         
