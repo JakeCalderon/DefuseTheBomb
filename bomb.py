@@ -156,5 +156,8 @@ gui = Lcd(window)
 strikes_left = NUM_STRIKES
 active_phases = NUM_PHASES  
 
+if bomb._defused = True
+    print("Bomb Defused")
+
 gui.after(100, bootup)
 window.mainloop()
